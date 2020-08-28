@@ -36,7 +36,6 @@ jobs:
         env:
           USERNAME: "colecrtr"
           PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          REGISTRY: "docker.pkg.github.com"
           DOCKERFILE: "Dockerfile"
           IMAGE_NAME: "website"
           TAG_NAME: ${{ github.sha }}
