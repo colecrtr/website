@@ -37,7 +37,7 @@ jobs:
           USERNAME: "colecrtr"
           PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           DOCKERFILE: "Dockerfile"
-          IMAGE_NAME: "website"
+          IMAGE_NAME: "colecrtr/website"
           TAG_NAME: ${{ github.sha }}
       - name: Tag new version
         run: |
