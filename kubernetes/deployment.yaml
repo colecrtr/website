@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: website
+  namespace: website
+spec:
+  selector:
+    matchLabels:
+      app: website
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: website
+    spec:
+      containers:
+      - name: website
+        image: docker.pkg.github.com/colecrtr/website/website:{{ WEBSITE_TAG }}
+        ports:
+          - containerPort: 8000

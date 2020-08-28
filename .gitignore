@@ -1,0 +1,6 @@
+.*
+!.gitignore
+!.python-version
+!.github/
+
+*.pyc

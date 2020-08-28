@@ -1,0 +1,53 @@
+name: CI/CD
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install Python dependencies
+        run: pip install -r dev.requirements.txt
+      - name: isort
+        run: isort --check-only
+      - name: Black
+        run: black . --check
+      - name: Flake8
+        run: flake8 tests/ website/
+      - name: Pytest
+        run: pytest
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Docker build & push to GitHub Package
+        uses: opspresso/action-docker@master
+        with:
+          args: --docker
+        env:
+          USERNAME: ${{ secrets.GH_USERNAME }}
+          PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY: "docker.pkg.github.com"
+          DOCKERFILE: "Dockerfile"
+          IMAGE_NAME: "website"
+          TAG_NAME: ${{ GITHUB_SHA }}
+      - name: Tag new version
+        run: sed -ie 's/{{ WEBSITE_TAG }}/${{ GITHUB_SHA }}/g' kubernetes/deployment.yaml
+      - name: Commit new version to release branch
+        uses: EndBug/add-and-commit@v4
+        with:
+          ref: "release"
+          add: "-A"
+          message: "Release ${{ GITHUB_SHA }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

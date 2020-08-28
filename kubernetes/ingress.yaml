@@ -1,0 +1,21 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: website
+  namespace: website
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+spec:
+  tls:
+    - hosts:
+        - "colecarter.dev"
+      secretName: tls-colecarter-dev
+  rules:
+    - host: colecarter.dev
+      http:
+        paths:
+          - backend:
+              serviceName: website
+              servicePort: 80

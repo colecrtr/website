@@ -1,0 +1,38 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: website
+  namespace: argocd
+spec:
+  description: My personal website
+  sourceRepos:
+    - https://github.com/colecrtr/website
+  destinations:
+    - namespace: website
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: website
+  namespace: argocd
+spec:
+  project: website
+  source:
+    repoURL: https://github.com/colecrtr/website
+    targetRevision: master
+    path: .
+  destination:
+    namespace: website
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
