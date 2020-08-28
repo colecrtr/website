@@ -42,7 +42,7 @@ jobs:
           TAG_NAME: ${{ env.GITHUB_SHA }}
       - name: Tag new version
         run: |
-          sed -e 's/{{ WEBSITE_TAG }}/${GITHUB_SHA}/g' kubernetes/deployment.yaml > kubernetes/deployment.yaml.temp \
+          sed -e 's/{{ WEBSITE_TAG }}/$GITHUB_SHA/g' kubernetes/deployment.yaml > kubernetes/deployment.yaml.temp \
           && mv kubernetes/deployment.yaml.temp kubernetes/deployment.yaml
         env:
           GITHUB_SHA: ${{ env.GITHUB_SHA }}
@@ -51,7 +51,7 @@ jobs:
         with:
           ref: "release"
           add: "-A"
-          message: "Release ${GITHUB_SHA}"
+          message: "Release $GITHUB_SHA"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_SHA: ${{ env.GITHUB_SHA }}
