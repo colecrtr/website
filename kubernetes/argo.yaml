@@ -27,7 +27,7 @@ spec:
   project: website
   source:
     repoURL: https://github.com/colecrtr/website
-    targetRevision: master
+    targetRevision: release
     path: kubernetes
   destination:
     namespace: website
