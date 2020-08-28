@@ -28,7 +28,7 @@ spec:
   source:
     repoURL: https://github.com/colecrtr/website
     targetRevision: master
-    path: .
+    path: kubernetes
   destination:
     namespace: website
     server: https://kubernetes.default.svc
