@@ -38,7 +38,7 @@ jobs:
           PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           REGISTRY: "docker.pkg.github.com"
           DOCKERFILE: "Dockerfile"
-          IMAGE_NAME: "colecrtr/website"
+          IMAGE_NAME: "website"
           TAG_NAME: ${{ github.sha }}
       - name: Tag new version
         run: |
