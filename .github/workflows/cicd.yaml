@@ -41,13 +41,18 @@ jobs:
           IMAGE_NAME: "website"
           TAG_NAME: ${{ env.GITHUB_SHA }}
       - name: Tag new version
-        run: sed -ie 's/{{ WEBSITE_TAG }}/${{ env.GITHUB_SHA }}/g' kubernetes/deployment.yaml
+        run: |
+          sed -e 's/{{ WEBSITE_TAG }}/${{ GITHUB_SHA }}/g' kubernetes/deployment.yaml > kubernetes/deployment.yaml.temp \
+          && mv kubernetes/deployment.yaml.temp kubernetes/deployment.yaml
+        env:
+          GITHUB_SHA: ${{ env.GITHUB_SHA }}
       - name: Commit new version to release branch
         uses: EndBug/add-and-commit@v4
         with:
           ref: "release"
           add: "-A"
-          message: "Release ${{ env.GITHUB_SHA }}"
+          message: "Release ${{ GITHUB_SHA }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SHA: ${{ env.GITHUB_SHA }}
 
