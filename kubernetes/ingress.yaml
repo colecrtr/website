@@ -16,7 +16,6 @@ spec:
     - host: colecarter.dev
       http:
         paths:
-          - path: /
-            backend:
+          - backend:
               serviceName: website
               servicePort: 80
