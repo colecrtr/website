@@ -34,22 +34,21 @@ jobs:
         with:
           args: --docker
         env:
-          USERNAME: ${{ secrets.GH_USERNAME }}
+          USERNAME: ${{ github.repository_owner }}
           PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY: "docker.pkg.github.com"
           DOCKERFILE: "Dockerfile"
           IMAGE_NAME: "website"
-          TAG_NAME: ${{ env.GITHUB_SHA }}
+          TAG_NAME: ${{ github.sha }}
       - name: Tag new version
         run: |
-          sed -e 's/{{ WEBSITE_TAG }}/${GITHUB_SHA}/g' kubernetes/deployment.yaml > kubernetes/deployment.yaml.temp \
+          sed -e 's/{{ WEBSITE_TAG }}/'${{ github.sha }}'/g' kubernetes/deployment.yaml > kubernetes/deployment.yaml.temp \
           && mv kubernetes/deployment.yaml.temp kubernetes/deployment.yaml
       - name: Commit new version to release branch
         uses: EndBug/add-and-commit@v4
         with:
           ref: "release"
           add: "-A"
-          message: "Release ${GITHUB_SHA}"
+          message: "Release ${{ github.sha }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
