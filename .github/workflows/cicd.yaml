@@ -34,11 +34,11 @@ jobs:
         with:
           args: --docker
         env:
-          USERNAME: ${{ github.repository_owner }}
-          PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: "colecrtr"
+          PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           REGISTRY: "docker.pkg.github.com"
           DOCKERFILE: "Dockerfile"
-          IMAGE_NAME: "website"
+          IMAGE_NAME: "colecrtr/website"
           TAG_NAME: ${{ github.sha }}
       - name: Tag new version
         run: |
