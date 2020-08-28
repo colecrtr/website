@@ -15,7 +15,6 @@ class TestContent(TestCase):
 
     def setUp(self):
         self.content = Content(str(BASE_TESTS_DIR / "test_content"))
-        print(self.content)
 
     def test_get_path_key_static_method_with_shallow_path(self):
         path = Path("a/b/c/d.md")
