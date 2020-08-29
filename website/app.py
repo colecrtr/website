@@ -12,7 +12,6 @@ content = Content(BASE_CONTENT_PATH)
 
 async def app(scope, receive, send):
     path = scope["path"]
-    print(path)
 
     try:
         html = content[path].html
