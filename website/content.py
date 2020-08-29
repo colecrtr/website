@@ -36,4 +36,4 @@ class Content(dict):
         for content_path in directory.rglob(f"*{extension}"):
             key = Content.get_path_key(content_path, directory, extension)
             with open(str(content_path.resolve())) as content_file:
-                self[key] = Markdown(content_file.read())
+                self[key] = Markdown(content_file.read()).html

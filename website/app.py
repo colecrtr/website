@@ -14,7 +14,7 @@ async def app(scope, receive, send):
     path = scope["path"]
 
     try:
-        html = content[path].html
+        html = content[path]
     except KeyError:
         await send(
             {
