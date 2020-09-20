@@ -17,4 +17,4 @@ spec:
       - name: website
         image: colecrtr/website:{{ WEBSITE_TAG }}
         ports:
-          - containerPort: 8000
+          - containerPort: 80
