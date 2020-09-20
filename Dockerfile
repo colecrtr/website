@@ -14,5 +14,5 @@ COPY ./build.py ./
 RUN python build.py
 
 FROM nginx:alpine
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/build /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/build/ /usr/share/nginx/html/
