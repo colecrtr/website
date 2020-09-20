@@ -1,6 +1,6 @@
 ---
-type: page
-title: My title
+template: test
+title: My page title
 description: Test description
 author: Cole Carter
 published: 2020-01-02

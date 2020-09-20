@@ -1,39 +1,75 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import Dict
 
-from .markdown import Markdown
+import markdown as md
+import pendulum
+from jinja2 import Template
+
+from .utils import get_path_key
 
 
-class Content(dict):
-    """In-memory content management"""
+class Content:
+    """A piece of content of this website, written in Markdown"""
 
-    @staticmethod
-    def get_path_key(path: Path, directory: Path, extension: str):
-        """
-        Returns the OS-independent path key by taking the original path and removing the beginning
-        content `directory` parts and the trailing file `extension`
-        """
+    def __init__(self, file_path: Path, templates: Dict[str, Template]):
+        self._file_path = file_path
+        self._markdown = md.Markdown(extensions=["fenced_code", "meta"])
 
-        # Path parts, excluding the content directory
-        parts = path.parts[len(directory.parts) :]
+        with open(str(file_path.resolve())) as file:
+            self._html = self._markdown.convert(file.read())
 
-        # Restructured, forward-slash delimited
-        restructured = "/" + "/".join(parts)
+        self._template = templates[self.get_meta("template", "string")]
 
-        # Remove the file extension.
-        path_key = restructured[: (-1 * len(extension))]
+    def get_meta(self, key, _type):
+        """Returns the meta value for the given `key` casted or parsed to the expected `_type`."""
 
-        return path_key
+        value = self._markdown.Meta.get(key)[0]
 
-    def __init__(self, directory: str):
-        extension = ".md"
-        directory = Path(directory)
+        if _type == "string":
+            value = str(value)
+        elif _type == "datetime":
+            value = pendulum.parse(value)
 
+        return value
+
+    @property
+    def author(self) -> str:
+        return self.get_meta("author", "string")
+
+    @property
+    def description(self) -> str:
+        return self.get_meta("description", "string")
+
+    @property
+    def html(self) -> str:
+        return self._html
+
+    @property
+    def published(self) -> pendulum.DateTime:
+        return self.get_meta("published", "datetime")
+
+    @property
+    def template(self) -> Template:
+        return self._template
+
+    @property
+    def title(self) -> str:
+        return self.get_meta("title", "string")
+
+    @classmethod
+    def get(cls, directory: Path, templates: Dict[str, Template]) -> Dict[str, Content]:
         if not directory.exists():
             raise FileNotFoundError(directory)
-        if not directory.is_dir():
-            raise ValueError(f"`{directory}` is not a directory")
+        elif not directory.is_dir():
+            raise ValueError(f"{directory} is not a directory")
 
-        for content_path in directory.rglob(f"*{extension}"):
-            key = Content.get_path_key(content_path, directory, extension)
-            with open(str(content_path.resolve())) as content_file:
-                self[key] = Markdown(content_file.read()).html
+        extension = ".md"
+        content: Dict[str, Content] = {}
+
+        for path in directory.rglob(f"*{extension}"):
+            path_key = get_path_key(path=path, directory=directory, extension=extension)
+            content[path_key] = Content(file_path=path, templates=templates)
+
+        return content

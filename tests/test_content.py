@@ -1,43 +1,60 @@
-from pathlib import Path
 from unittest import TestCase
 
-import faker
+import pendulum
 
 from tests import BASE_TESTS_DIR
 from website.content import Content
-
-
-fake = faker.Faker()
+from website.templates import get_templates
 
 
 class TestContent(TestCase):
-    """Tests for the `Content` class."""
+    """Tests for the `Content` class"""
 
     def setUp(self):
-        self.content = Content(str(BASE_TESTS_DIR / "test_content"))
+        self.content_dir = BASE_TESTS_DIR / "test_content"
+        self.templates = get_templates(BASE_TESTS_DIR / "test_templates")
+        self.content = Content(self.content_dir / "test.md", templates=self.templates)
 
-    def test_get_path_key_static_method_with_shallow_path(self):
-        path = Path("a/b/c/d.md")
-        directory = Path("a/b/c")
-        extension = ".md"
-        expected = "/d"
+    def test_nonexistent_file(self):
+        with self.assertRaises(FileNotFoundError):
+            Content(self.content_dir / "blah.md", templates=self.templates)
 
-        self.assertEqual(Content.get_path_key(path, directory, extension), expected)
+    def test_existing_file(self):
+        Content(self.content_dir / "test.md", templates=self.templates)
 
-    def test_get_path_key_static_method_with_deep_path(self):
-        path = Path("a/b/c/d/e/f/g/h/i/j/k/l/m.md")
-        directory = Path("a/b")
-        extension = ".md"
-        expected = "/c/d/e/f/g/h/i/j/k/l/m"
+    def test_author(self):
+        self.assertEqual(self.content.author, "Cole Carter")
 
-        self.assertEqual(Content.get_path_key(path, directory, extension), expected)
+    def test_description(self):
+        self.assertEqual(self.content.description, "Test description")
 
-    def test_non_existent_content_directory(self):
-        non_existent_path = str(BASE_TESTS_DIR / fake.word() / fake.word())
-        with self.assertRaisesRegex(FileNotFoundError, non_existent_path):
-            Content(non_existent_path)
+    def test_html(self):
+        self.assertIn(
+            "<p>Example content should be placed here.</p>", self.content.html
+        )
 
-    def test_file_path(self):
-        file_path = str(BASE_TESTS_DIR / "test_content" / "test.md")
-        with self.assertRaisesRegex(ValueError, r"is not a directory"):
-            Content(file_path)
+    def test_published(self):
+        self.assertEqual(self.content.published, pendulum.datetime(2020, 1, 1))
+
+    def test_template(self):
+        self.assertEqual(self.content.template, self.templates["test"])
+
+    def test_title(self):
+        self.assertEqual(self.content.title, "Test Title")
+
+    def test_get_with_nonexistent_directory(self):
+        with self.assertRaises(FileNotFoundError):
+            Content.get(BASE_TESTS_DIR / "not_real", templates=self.templates)
+
+    def test_get_with_file_path(self):
+        with self.assertRaises(ValueError):
+            Content.get(self.content_dir / "test.md", templates=self.templates)
+
+    def test_get_with_existing_directory(self):
+        Content.get(self.content_dir, templates=self.templates)
+
+    def test_get_maps_content_correctly(self):
+        content = Content.get(self.content_dir, templates=self.templates)
+        self.assertEqual(content["some_other_test/deeper/page"].title, "My page title")
+        self.assertEqual(content["index"].title, "Test INDEX Title")
+        self.assertEqual(content["test"].title, "Test Title")

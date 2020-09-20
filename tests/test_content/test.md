@@ -1,8 +1,8 @@
 ---
-type: test_type1234567890
+template: test
 title: Test Title
-description: Test description
-author: Cole Carter
+description:  Test description
+author:   Cole Carter 
 published: 2020-01-01
 updated: 2120-01-01
 ---

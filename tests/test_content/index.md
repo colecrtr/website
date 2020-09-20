@@ -1,6 +1,6 @@
 ---
-type: test_type1234567890
-title: Test Title
+template: test
+title: Test INDEX Title
 description: Test description
 author: Cole Carter
 published: 2020-01-01
