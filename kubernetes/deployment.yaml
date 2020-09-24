@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: website
-        image: colecrtr/website:{{ WEBSITE_TAG }}
+        image: colecrtr/website:7597280b85ad85dd1c456f06b16e8d5d3c162e95
         ports:
           - containerPort: 80
